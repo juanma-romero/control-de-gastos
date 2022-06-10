@@ -1,6 +1,13 @@
+import { useState } from 'react'
+import Mensaje from './Mensaje';
 import CerrarBoton from '../img/cerrar.svg'
 
 const Modal = ({setModalGasto, animarModal, setAnimarModal}) => {
+
+    const [nombreGasto, setNombreGasto] = useState('');
+    const [cantidadGasto, setCantidadGasto] = useState('');
+    const [categoriaGasto, setCategoriaGasto] = useState('');
+    const [mensajeValidacion, setMensajeValidacion] = useState('');
 
     const handleOcultarModal = () => {
         
@@ -20,6 +27,18 @@ const Modal = ({setModalGasto, animarModal, setAnimarModal}) => {
         {value: 'suscripciones', name : 'Suscripciones'},
     ]
 
+    const handleSubmit = e => {
+        e.preventDefault()
+        if ([nombreGasto, cantidadGasto, categoriaGasto].includes('')) {
+            setMensajeValidacion('Todos los campos son obligatorios')
+
+            setTimeout( () => {
+                setMensajeValidacion('')
+            }, 3000)
+            return
+        }
+    }
+
     return (
         <div className="modal">
             <div className="cerrar-modal">
@@ -29,30 +48,47 @@ const Modal = ({setModalGasto, animarModal, setAnimarModal}) => {
                     onClick={handleOcultarModal}
                 />
             </div>
-            <form className={`formulario ${animarModal? 'animar': 'cerrar'}`}>
+            <form
+                onSubmit={handleSubmit}
+                className={`formulario ${animarModal? 'animar': 'cerrar'}`}>
+
                 <legend>Nuevo Gasto</legend>
+
+                {mensajeValidacion && <Mensaje tipo='error'>{mensajeValidacion}</Mensaje>}
+
                 <div className='campo'>
-                    <label htmlFor='nombre'>Nombre Gasto</label>
+                    <label htmlFor='nombreGasto'>Nombre Gasto</label>
                     <input
-                        id='nombre'
+                        id='nombreGasto'
                         type='text'
                         placeholder='Añade el gasto'
+                        value={nombreGasto}
+                        onChange={(e) => setNombreGasto(e.target.value)}
                     />
                 </div>
                 <div className='campo'>
-                    <label htmlFor='cantidad'>Cantidad</label>
+                    <label htmlFor='cantidadGasto'>Cantidad</label>
                     <input
-                        id='cantidad'
+                        id='cantidadGasto'
                         type='number'
                         placeholder='Añade cantidad'
+                        value={cantidadGasto}
+                        onChange={(e) => setCantidadGasto(Number(e.target.value))}
                     />
                 </div>
                 <div className='campo'>
-                    <label htmlFor='categoria'>Categoria</label>
+                    <label htmlFor='categoriaGasto'>Categoria</label>
                     {/*<select
                         id='categoria'
                     ></select>*/}
-                    <select id='categoria'>
+                    <select
+                        id='categoriaGasto'
+                        value={categoriaGasto}
+                        onChange={(e) => setCategoriaGasto(e.target.value)}
+                        >                        
+                    {/**
+                     * map para iterar sobre variable categoria 
+                     */}
                         {
                             categorias.map( (item, index) => {
                                 return <option key={index} value={item.value}>{item.name}</option>
@@ -60,7 +96,7 @@ const Modal = ({setModalGasto, animarModal, setAnimarModal}) => {
                         }
                     </select>
                 </div>
-                <input 
+                <input                
                     type='submit'
                     value='Añadir gasto'
                 />
